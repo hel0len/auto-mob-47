@@ -1,2 +1,5 @@
-package PACKAGE_NAME;public class MainClass {
+public class MainClass {
+    public int getLocalNumber() {
+        return 14;
+    }
 }
