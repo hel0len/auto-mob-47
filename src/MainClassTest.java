@@ -23,4 +23,15 @@ public class MainClassTest extends MainClass {
         Assert.assertTrue(errorText, resultValue > borderValue);
     }
 
+    @Test
+    public void testGetClassString() {
+
+        String substr_1 = "hello";
+        String substr_2 = "Hello";
+        String resultStr = this.getClassString();
+        String errorText = "Expected \'" + substr_1 + "\' or \'" + substr_2 + "\' included in \'" + resultStr + "\'";
+
+        Assert.assertTrue(errorText, resultStr.contains(substr_1) || resultStr.contains(substr_2));
+    }
+
 }
