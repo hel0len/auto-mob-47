@@ -13,4 +13,14 @@ public class MainClassTest extends MainClass {
         Assert.assertTrue(errorText, resultValue == expectedValue);
     }
 
+    @Test
+    public void testGetClassNumber() {
+
+        int borderValue = 45;
+        int resultValue = this.getClassNumber();
+        String errorText = "Expected " + resultValue + " to be greater than " + borderValue;
+
+        Assert.assertTrue(errorText, resultValue > borderValue);
+    }
+
 }
