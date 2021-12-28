@@ -60,8 +60,7 @@ public class FirstTest {
 
     // Проверка отмены поиска
     @Test
-    public void testCancelSearch()
-    {
+    public void testCancelSearch() {
         waitForElementAndClick(
                 By.xpath("//*[contains(@text, 'Search Wikipedia')]"),
                 "Не найдена строка поиска",
@@ -87,8 +86,7 @@ public class FirstTest {
 
     // Проверка соответствия заголовка открытой статьи
     @Test
-    public void testCompareArticleTitle()
-    {
+    public void testCompareArticleTitle() {
         waitForElementAndClick(
                 By.xpath("//*[contains(@text, 'Search Wikipedia')]"),
                 "Не найдена строка поиска",
@@ -117,6 +115,15 @@ public class FirstTest {
                 article_title);
     }
 
+    // Проверка текста плейсхолдера в строке поиска
+    @Test
+    public void testComparePlaceholderSearchText() {
+        assertElementHasText(
+                By.xpath("//*[@resource-id='org.wikipedia:id/search_container']//*[@class='android.widget.TextView']"),
+                "Search Wikipedia",
+                "Текст плейсхолдера в строке поиска не соответствует ожидаемому" );
+    }
+
 
     // Ожидание присутствия элемента на странице с явным указанием таймаута
     private WebElement waitForElementPresent(By by, String error_message, long timeoutInSessions) {
@@ -128,8 +135,7 @@ public class FirstTest {
     }
 
     // Ожидание отсутствия элемента на странице с явным указанием таймаута
-    private boolean waitForElementNotPresent(By by, String error_message, long timeoutInSessions)
-    {
+    private boolean waitForElementNotPresent(By by, String error_message, long timeoutInSessions) {
         WebDriverWait wait = new WebDriverWait(driver, timeoutInSessions);
         wait.withMessage(error_message + "\n");
         return wait.until(
@@ -144,24 +150,34 @@ public class FirstTest {
     }
 
     // Ожидание и клик с явной передачей таймаута
-    private WebElement waitForElementAndClick(By by, String error_message, long timeoutInSessions)
-    {
-        WebElement element =  waitForElementPresent(by, error_message, timeoutInSessions);
+    private WebElement waitForElementAndClick(By by, String error_message, long timeoutInSessions) {
+        WebElement element = waitForElementPresent(by, error_message, timeoutInSessions);
         element.click();
         return element;
     }
 
     // Ожидание и ввод текста с явной передачей таймаута
-    private WebElement waitForElementAndSendKeys(By by, String value, String error_message, long timeoutInSessions)
-    {
-        WebElement element =  waitForElementPresent(by, error_message, timeoutInSessions);
+    private WebElement waitForElementAndSendKeys(By by, String value, String error_message, long timeoutInSessions) {
+        WebElement element = waitForElementPresent(by, error_message, timeoutInSessions);
         element.sendKeys(value);
         return element;
     }
 
     // Ожидание и очистка поля с явной передачей таймаута
-    private WebElement waitForElementAndClear(By by, String error_message, long timeoutInSessions) {
-        WebElement element =  waitForElementPresent(by, error_message, timeoutInSessions);
+    private WebElement waitForElementAndClear(By by, String error_message, long timeoutInSeconds) {
+        WebElement element = waitForElementPresent(by, error_message, timeoutInSeconds);
         element.clear();
-        return element; }
+        return element;
+    }
+
+    // Проверка соответствия текста элемента ожидаемому
+    private void assertElementHasText(By by, String expected_text, String error_message) {
+        Assert.assertEquals(
+                error_message,
+                expected_text,
+                waitForElementPresent(by, error_message).getText()
+        );
+    }
 }
+
+
