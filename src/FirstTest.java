@@ -12,6 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import java.util.List;
 
 
 public class FirstTest {
@@ -73,7 +74,7 @@ public class FirstTest {
         waitForElementAndClear(
                 By.xpath("//*[contains(@text, 'Java')]"),
                 "Ошибка очистки поля ввода",
-                5 );
+                5);
         waitForElementAndClick(
                 By.xpath("//android.widget.ImageView[@content-desc=\"Clear query\"]"),
                 "Не найден крестик в строке поиска",
@@ -121,9 +122,36 @@ public class FirstTest {
         assertElementHasText(
                 By.xpath("//*[@resource-id='org.wikipedia:id/search_container']//*[@class='android.widget.TextView']"),
                 "Search Wikipedia",
-                "Текст плейсхолдера в строке поиска не соответствует ожидаемому" );
+                "Текст плейсхолдера в строке поиска не соответствует ожидаемому");
     }
 
+    // Проверка наличия в поисковой выдаче результатов после отмены поиска
+    @Test
+    public void testCancelSearchWithResults() {
+        waitForElementAndClick(
+                By.xpath("//*[contains(@text, 'Search Wikipedia')]"),
+                "Не найдена строка поиска",
+                5);
+        waitForElementAndSendKeys(
+                By.xpath("//*[contains(@text, 'Search…')]"),
+                "Test",
+                "Ошибка ввода текста в строку поиска",
+                5);
+        List oldListElements = waitForListElements(
+                By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_container']"));
+        Assert.assertTrue(
+                "В поисковой выдаче отсутствуют результаты",
+                oldListElements.size() != 0);
+        waitForElementAndClick(
+                By.xpath("//android.widget.ImageView[@content-desc=\"Clear query\"]"),
+                "Не найден крестик в строке поиска",
+                5);
+        List newListElements = waitForListElements(
+                By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_container']"));
+        Assert.assertTrue(
+                "В поисковой выдаче присутствуют результаты",
+                newListElements.size() == 0);
+    }
 
     // Ожидание присутствия элемента на странице с явным указанием таймаута
     private WebElement waitForElementPresent(By by, String error_message, long timeoutInSessions) {
@@ -177,6 +205,11 @@ public class FirstTest {
                 expected_text,
                 waitForElementPresent(by, error_message).getText()
         );
+    }
+
+    // Получение списка элементов на странице по локатору
+    private List waitForListElements(By by) {
+        return driver.findElements(by);
     }
 }
 
