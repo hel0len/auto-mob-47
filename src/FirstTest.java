@@ -12,6 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+
 import java.util.List;
 
 
@@ -153,6 +154,31 @@ public class FirstTest {
                 newListElements.size() == 0);
     }
 
+    // Проверка наличия искомого слова во всех результатах поиска
+    @Test
+    public void testMatchResults() {
+        waitForElementAndClick(
+                By.xpath("//*[contains(@text, 'Search Wikipedia')]"),
+                "Не найдена строка поиска",
+                5);
+        String searchWord = "Java";
+        waitForElementAndSendKeys(
+                By.xpath("//*[contains(@text, 'Search…')]"),
+                searchWord,
+                "Ошибка ввода текста в строку поиска",
+                5);
+        List listElements = waitForListElements(
+                By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_title']"));
+        for (Object element : listElements) {
+            WebElement webElement = (WebElement) element;
+            String title = webElement.getText();
+            Assert.assertTrue(
+                    "Заголовок результата: \"" + title + "\" не содержит искомого слова: \"" + searchWord + "\"",
+                    title.contains(searchWord)
+            );
+        }
+    }
+
     // Ожидание присутствия элемента на странице с явным указанием таймаута
     private WebElement waitForElementPresent(By by, String error_message, long timeoutInSessions) {
         WebDriverWait wait = new WebDriverWait(driver, timeoutInSessions);
@@ -208,7 +234,7 @@ public class FirstTest {
     }
 
     // Получение списка элементов на странице по локатору
-    private List waitForListElements(By by) {
+    private List<WebElement> waitForListElements(By by) {
         return driver.findElements(by);
     }
 }
