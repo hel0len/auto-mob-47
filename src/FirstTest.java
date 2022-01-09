@@ -501,6 +501,28 @@ public class FirstTest {
                 new_second_article_title);
     }
 
+    // Проверка отображения заголовка статьи без ожидания
+    @Test
+    public void testPresentTitle() {
+        waitForElementAndClick(
+                By.xpath("//*[contains(@text, 'Search Wikipedia')]"),
+                "Не найдена строка поиска",
+                5);
+        waitForElementAndSendKeys(
+                By.xpath("//*[contains(@text, 'Search…')]"),
+                "Appium",
+                "Ошибка ввода текста в строку поиска",
+                5);
+        waitForElementAndClick(
+                By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_title'][contains(@text, 'Appium')]"),
+                "В выдаче не найдена страница Appium",
+                15);
+        assertElementPresent(
+                By.xpath("//*[@resource-id='org.wikipedia:id/view_page_title_text']"),
+                "Не найден заголовок страницы"
+        );
+    }
+
 
     // Ожидание присутствия элемента на странице с явным указанием таймаута
     private WebElement waitForElementPresent(By by, String error_message, long timeoutInSessions) {
@@ -619,7 +641,7 @@ public class FirstTest {
                 .perform();
     }
 
-    // Возвращает количеств элементов на экране по переданному локатору
+    // Возвращает количество элементов на экране по переданному локатору
     private int getAmountOfElements(By by) {
         List elements = driver.findElements(by);
         return elements.size();
@@ -630,7 +652,7 @@ public class FirstTest {
         int amountOfElements = getAmountOfElements(by);
         if (amountOfElements > 0) {
             String default_message = "Элемент с локатором '" + by.toString() + "' должен отсутствовать на экране";
-            throw new AssertionError(default_message + " " + error_message);
+            throw new AssertionError(default_message + "\n" + error_message);
         }
     }
 
@@ -638,6 +660,15 @@ public class FirstTest {
     private String waitForElementAndGetAttribute(By by, String attribute, String error_message, long timeoutInSeconds) {
         WebElement element = waitForElementPresent(by, error_message, timeoutInSeconds);
         return element.getAttribute(attribute);
+    }
+
+    // Выбрасывает ошибку в случае если не найден элемент по переданному локатору
+    private void assertElementPresent(By by, String error_message) {
+        int amountOfElements = getAmountOfElements(by);
+        if (amountOfElements == 0) {
+            String default_message = "Элемент с локатором '" + by.toString() + "' отсутствует на экране";
+            throw new AssertionError(default_message + "\n" + error_message);
+        }
     }
 
 
