@@ -3,47 +3,47 @@ package tests;
 import lib.CoreTestCase;
 import org.junit.Test;
 import org.openqa.selenium.By;
-import ui.ArticlePageObject;
-import ui.MainPageObject;
-import ui.SearhPageObject;
+import ui.*;
 
+// ---------------------------------- Тесты связанные с детальными страницами статей ----------------------------------
 public class ArticleTests extends CoreTestCase {
 
-    // Удалить после рефакторинга по пейдж-обджект
     private ui.MainPageObject MainPageObject;
+    private ui.SearchPageObject SearchPageObject;
+    private ui.ArticlePageObject ArticlePageObject;
 
     protected void setUp() throws Exception {
-
         super.setUp();
-
         MainPageObject = new MainPageObject(driver);
-    } // Удалить после рефакторинга по пейдж-обджект
+        SearchPageObject = new SearchPageObject(driver);
+        ArticlePageObject = new ArticlePageObject(driver);
+    }
 
     // Проверка соответствия заголовка открытой статьи
     @Test
     public void testCompareArticleTitle() {
-        SearhPageObject SearhPageObject = new SearhPageObject(driver);
-        ArticlePageObject ArticlePageObject = new ArticlePageObject(driver);
+        String search_word = "Java";
+        String expected_substring = "Object-oriented programming language";
+        String expected_title = "Java (programming language)";
 
-        SearhPageObject.initSearchInput();
-        SearhPageObject.typeSearchLine("Java");
-        SearhPageObject.clickByArticleWithSubstring("Object-oriented programming language");
-        String article_title = ArticlePageObject.getArticleTitle();
+        SearchPageObject.initSearchInput();
+        SearchPageObject.typeSearchLine(search_word);
+        SearchPageObject.clickByArticleWithSubstring(expected_substring);
+        String actual_title = ArticlePageObject.getArticleTitle();
         assertEquals(
                 "Некорректный заголовок страницы",
-                "Java (programming language)",
-                article_title);
+                expected_title,
+                actual_title);
     }
 
     // Свайп экрана вниз внутри статьи
     @Test
     public void testSwipeArticle() {
-        SearhPageObject SearhPageObject = new SearhPageObject(driver);
-        ArticlePageObject ArticlePageObject = new ArticlePageObject(driver);
+        String search_word = "Appium";
 
-        SearhPageObject.initSearchInput();
-        SearhPageObject.typeSearchLine("Appium");
-        SearhPageObject.clickByArticleWithSubstring("Appium");
+        SearchPageObject.initSearchInput();
+        SearchPageObject.typeSearchLine(search_word);
+        SearchPageObject.clickByArticleWithSubstring(search_word);
         ArticlePageObject.waitForTitleElement();
         ArticlePageObject.swipeToFooter();
     }
@@ -51,21 +51,13 @@ public class ArticleTests extends CoreTestCase {
     // Проверка отображения заголовка статьи без ожидания
     @Test
     public void testPresentTitle() {
-        MainPageObject.waitForElementAndClick(
-                By.xpath("//*[contains(@text, 'Search Wikipedia')]"),
-                "Не найдена строка поиска",
-                5);
-        MainPageObject.waitForElementAndSendKeys(
-                By.xpath("//*[contains(@text, 'Search…')]"),
-                "Appium",
-                "Ошибка ввода текста в строку поиска",
-                5);
-        MainPageObject.waitForElementAndClick(
-                By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_title'][contains(@text, 'Appium')]"),
-                "В выдаче не найдена страница Appium",
-                15);
+        String search_word = "Appium";
+
+        SearchPageObject.initSearchInput();
+        SearchPageObject.typeSearchLine(search_word);
+        SearchPageObject.clickByArticleWithSubstring(search_word);
         MainPageObject.assertElementPresent(
-                By.xpath("//*[@resource-id='org.wikipedia:id/view_page_title_text']"),
+                By.xpath(ArticlePageObject.TITLE),
                 "Не найден заголовок страницы"
         );
     }

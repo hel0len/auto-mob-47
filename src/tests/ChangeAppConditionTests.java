@@ -2,21 +2,28 @@ package tests;
 
 import lib.CoreTestCase;
 import org.junit.Test;
-import ui.ArticlePageObject;
-import ui.SearhPageObject;
+import ui.*;
 
+// -------------------------------- Тесты связанные изменениями состояния приложения ----------------------------------
 public class ChangeAppConditionTests extends CoreTestCase {
+
+    private ui.SearchPageObject SearchPageObject;
+    private ui.ArticlePageObject ArticlePageObject;
+
+    protected void setUp() throws Exception {
+        super.setUp();
+        SearchPageObject = new SearchPageObject(driver);
+        ArticlePageObject = new ArticlePageObject(driver);
+    }
 
     // Проверка соответствия результатов поиска при изменении ориентации экрана
     @Test
     public void testChangeScreenOrientationOnSearchResults() {
-        SearhPageObject SearhPageObject = new SearhPageObject(driver);
-        ArticlePageObject ArticlePageObject = new ArticlePageObject(driver);
         String search_word = "Java";
 
-        SearhPageObject.initSearchInput();
-        SearhPageObject.typeSearchLine(search_word);
-        SearhPageObject.clickByArticleWithSubstring("Object-oriented programming language");
+        SearchPageObject.initSearchInput();
+        SearchPageObject.typeSearchLine(search_word);
+        SearchPageObject.clickByArticleWithSubstring("Object-oriented programming language");
         String title_before_rotation = ArticlePageObject.getArticleTitle();
         this.rotateScreeLandScape();
         String title_after_rotation = ArticlePageObject.getArticleTitle();
@@ -35,15 +42,12 @@ public class ChangeAppConditionTests extends CoreTestCase {
     // Проверка сохранения выдачи поиска после сворачивания приложения в трей
     @Test
     public void testCheckSearchArticleInBackground() {
-        SearhPageObject SearhPageObject = new SearhPageObject(driver);
-        ArticlePageObject ArticlePageObject = new ArticlePageObject(driver);
         String search_word = "Java";
 
-        SearhPageObject.initSearchInput();
-        SearhPageObject.typeSearchLine(search_word);
-        SearhPageObject.waitForSearchResult("Object-oriented programming language");
+        SearchPageObject.initSearchInput();
+        SearchPageObject.typeSearchLine(search_word);
+        SearchPageObject.waitForSearchResult("Object-oriented programming language");
         this.backgroundApp(2);
-        SearhPageObject.waitForSearchResult("Object-oriented programming language");
+        SearchPageObject.waitForSearchResult("Object-oriented programming language");
     }
-
 }

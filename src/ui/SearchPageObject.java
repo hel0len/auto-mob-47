@@ -3,33 +3,30 @@ package ui;
 import io.appium.java_client.AppiumDriver;
 import org.openqa.selenium.By;
 
-public class SearhPageObject extends MainPageObject {
+public class SearchPageObject extends MainPageObject {
 
-    private static final String
+    public static final String
 
-        // Локаторы связанные с поиском
-        SEARCH_INIT_ELEMENT = "//*[contains(@text, 'Search Wikipedia')]",
-        SEARCH_INPUT =  "//*[contains(@text, 'Search…')]",
-        SEARCH_CANCEL_BUTTON = "//android.widget.ImageView[@content-desc=\"Clear query\"]",
-        SEARCH_RESULT_BY_SUBSTRING_TPL = "//*[@resource-id='org.wikipedia:id/page_list_item_container']" +
-                "//*[@text='{SUBSTRING}']",
-        SEARCH_RESULT_ELEMENT = "//*[@resource-id='org.wikipedia:id/search_results_list']" +
-            "/*[@resource-id='org.wikipedia:id/page_list_item_container']",
-        SEARCH_EMPTY_RESULT_ELEMENT = "//*[@text='No results found']";
+            // ------------------------------- Локаторы элементов связанные с поиском ---------------------------------
+            SEARCH_INIT_ELEMENT = "//*[contains(@text, 'Search Wikipedia')]",
+            SEARCH_INPUT = "//*[contains(@text, 'Search…')]",
+            SEARCH_CANCEL_BUTTON = "//android.widget.ImageView[@content-desc=\"Clear query\"]",
+            SEARCH_RESULT_BY_SUBSTRING_TPL = "//*[@resource-id='org.wikipedia:id/page_list_item_container']" +
+                    "//*[@text='{SUBSTRING}']",
+            SEARCH_RESULT_ELEMENTS = "//*[@resource-id='org.wikipedia:id/search_results_list']" +
+                    "/*[@resource-id='org.wikipedia:id/page_list_item_container']",
+            SEARCH_EMPTY_RESULT_ELEMENT = "//*[@text='No results found']",
+            SEARCH_LINE_PLACEHOLDER = "//*[@resource-id='org.wikipedia:id/search_container']" +
+                    "//*[@class='android.widget.TextView']",
+            SEARCH_RESULTS_TITLES = "//*[@resource-id='org.wikipedia:id/page_list_item_title']",
 
-    public SearhPageObject(AppiumDriver driver) {
+            // -------------------------------- Статичные значения текстовых элементов --------------------------------
+            TEXT_PLACEHOLDER = "Search Wikipedia";
+
+    public SearchPageObject(AppiumDriver driver) {
 
         super(driver);
     }
-
-    /* TEMPLATE METHODS */
-
-    // Добавление подстроки в локатор SEARCH_RESULT
-    private static String getResultSearchElement(String substring) {
-        return SEARCH_RESULT_BY_SUBSTRING_TPL.replace("{SUBSTRING}", substring);
-    }
-
-    /* TEMPLATE METHODS */
 
     // Инициирование поиска
     public void initSearchInput() {
@@ -53,7 +50,7 @@ public class SearhPageObject extends MainPageObject {
 
     // Проверка отображения в поисоковой выдаче результата с переданным текстом
     public void waitForSearchResult(String substring) {
-        String result_locator = getResultSearchElement(substring);
+        String result_locator = getLocator(SEARCH_RESULT_BY_SUBSTRING_TPL, substring);
         this.waitForElementPresent(
                 By.xpath(result_locator),
                 "В поисковой выдаче не отображен результат с подстрокой: " + substring,
@@ -62,7 +59,7 @@ public class SearhPageObject extends MainPageObject {
 
     // Клик по результату с переданной подстрокой в поисковой выдаче
     public void clickByArticleWithSubstring(String substring) {
-        String result_locator = getResultSearchElement(substring);
+        String result_locator = getLocator(SEARCH_RESULT_BY_SUBSTRING_TPL, substring);
         this.waitForElementAndClick(
                 By.xpath(result_locator),
                 "Не удалось кликнуть по результату в поисковой выдаче с подстрокой: " + substring,
@@ -96,10 +93,10 @@ public class SearhPageObject extends MainPageObject {
     // Возвращает количество элементов в поисковой выдаче
     public int getAmountOfFoundArticles() {
         this.waitForElementPresent(
-                By.xpath(SEARCH_RESULT_ELEMENT),
+                By.xpath(SEARCH_RESULT_ELEMENTS),
                 "По запросу не найдены результаты",
                 10);
-        return this.getAmountOfElements(By.xpath(SEARCH_RESULT_ELEMENT));
+        return this.getAmountOfElements(By.xpath(SEARCH_RESULT_ELEMENTS));
     }
 
     // Проверка наличия на экране сообщения об отсутствии результатов в поисковой выдаче
@@ -113,8 +110,16 @@ public class SearhPageObject extends MainPageObject {
     // Проверка отсутствия результатов поиска на экране
     public void assertThereIsNoResultOfSearch() {
         this.assertElementNotPresent(
-                By.xpath(SEARCH_RESULT_ELEMENT),
+                By.xpath(SEARCH_RESULT_ELEMENTS),
                 "По запросу не должны быть найдены результаты");
+    }
+
+    // Проверка соответствия плейсхолдела в строке поиска ожидаемому
+    public void assertComparePlaceholder() {
+        this.assertElementHasText(
+                By.xpath(SEARCH_LINE_PLACEHOLDER),
+                TEXT_PLACEHOLDER,
+                "Текст плейсхолдера в строке поиска не соответствует ожидаемому");
     }
 
 }

@@ -20,6 +20,13 @@ public class MainPageObject {
         this.driver = driver;
     }
 
+    /*---------------------------------------------- TEMPLATE METHODS ---------------------------------------------- */
+    // Добавление подстроки в локатор
+    public static String getLocator(String locator, String substring) {
+        return locator.replace("{SUBSTRING}", substring);
+    }
+    /*---------------------------------------------- TEMPLATE METHODS ---------------------------------------------- */
+
     // Ожидание присутствия элемента на странице с явным указанием таймаута
     public WebElement waitForElementPresent(By by, String error_message, long timeoutInSessions) {
         WebDriverWait wait = new WebDriverWait(driver, timeoutInSessions);
@@ -158,7 +165,7 @@ public class MainPageObject {
         return element.getAttribute(attribute);
     }
 
-    // Выбрасывает ошибку в случае если не найден элемент по переданному локатору
+    // Выбрасывает ошибку в случае если не найден элемент по переданному локатору (без ожидания)
     public void assertElementPresent(By by, String error_message) {
         int amountOfElements = getAmountOfElements(by);
         if (amountOfElements == 0) {
@@ -167,4 +174,15 @@ public class MainPageObject {
         }
     }
 
+    // Проверка наличия подстроки в тексте каждого элемента списка
+    public void assertCompareTextElementsInList(List listElements, String substring) {
+        for (Object element : listElements) {
+            WebElement webElement = (WebElement) element;
+            String title = webElement.getText();
+            Assert.assertTrue(
+                    "Заголовок результата: \"" + title + "\" не содержит искомого слова: \"" + substring + "\"",
+                    title.contains(substring)
+            );
+        }
+    }
 }

@@ -3,133 +3,97 @@ package tests;
 import lib.CoreTestCase;
 import org.junit.Test;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
 import ui.MainPageObject;
-import ui.SearhPageObject;
+import ui.SearchPageObject;
 
 import java.util.List;
 
-// Тесты связанные с поиском
+// ----------------------------------- Тесты связанные с пользовательскими поиском ------------------------------------
 public class SearchTests extends CoreTestCase {
 
-    // Удалить после рефакторинга по пейдж-обджект
     private ui.MainPageObject MainPageObject;
+    private ui.SearchPageObject SearchPageObject;
 
     protected void setUp() throws Exception {
-
         super.setUp();
-
         MainPageObject = new MainPageObject(driver);
-    } // Удалить после рефакторинга по пейдж-обджект
-
+        SearchPageObject = new SearchPageObject(driver);
+    }
 
     // Проверка поиска по тексту
     @Test
     public void testSearch() {
+        String search_word = "Java";
+        String expected_substring = "Object-oriented programming language";
 
-        SearhPageObject SearhPageObject = new SearhPageObject(driver);
-
-        SearhPageObject.initSearchInput();
-        SearhPageObject.typeSearchLine("Java");
-        SearhPageObject.waitForSearchResult("Object-oriented programming language");
+        SearchPageObject.initSearchInput();
+        SearchPageObject.typeSearchLine(search_word);
+        SearchPageObject.waitForSearchResult(expected_substring);
     }
 
     // Проверка отмены поиска
     @Test
     public void testCancelSearch() {
-        SearhPageObject SearhPageObject = new SearhPageObject(driver);
-
-        SearhPageObject.initSearchInput();
-        SearhPageObject.waitForCancelButtonToAppear();
-        SearhPageObject.clickCancelSearch();
-        SearhPageObject.waitForCancelButtonToDisappear();
+        SearchPageObject.initSearchInput();
+        SearchPageObject.waitForCancelButtonToAppear();
+        SearchPageObject.clickCancelSearch();
+        SearchPageObject.waitForCancelButtonToDisappear();
     }
 
     // Проверка текста плейсхолдера в строке поиска
     @Test
     public void testComparePlaceholderSearchText() {
-        MainPageObject.assertElementHasText(
-                By.xpath("//*[@resource-id='org.wikipedia:id/search_container']//*[@class='android.widget.TextView']"),
-                "Search Wikipedia",
-                "Текст плейсхолдера в строке поиска не соответствует ожидаемому");
+        SearchPageObject.assertComparePlaceholder();
     }
 
     // Проверка наличия в поисковой выдаче результатов после отмены поиска
     @Test
     public void testCancelSearchWithResults() {
-        MainPageObject.waitForElementAndClick(
-                By.xpath("//*[contains(@text, 'Search Wikipedia')]"),
-                "Не найдена строка поиска",
-                5);
-        MainPageObject.waitForElementAndSendKeys(
-                By.xpath("//*[contains(@text, 'Search…')]"),
-                "Test",
-                "Ошибка ввода текста в строку поиска",
-                5);
-        List oldListElements = MainPageObject.waitForListElements(
-                By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_container']"));
+        String search_word = "Test";
+
+        SearchPageObject.initSearchInput();
+        SearchPageObject.typeSearchLine(search_word);
+        int amountElements = SearchPageObject.getAmountOfFoundArticles();
         assertTrue(
                 "В поисковой выдаче отсутствуют результаты",
-                oldListElements.size() != 0);
-        MainPageObject.waitForElementAndClick(
-                By.xpath("//android.widget.ImageView[@content-desc=\"Clear query\"]"),
-                "Не найден крестик в строке поиска",
-                5);
-        List newListElements = MainPageObject.waitForListElements(
-                By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_container']"));
-        assertTrue(
-                "В поисковой выдаче присутствуют результаты",
-                newListElements.size() == 0);
+                amountElements != 0);
+        SearchPageObject.clickCancelSearch();
+        SearchPageObject.assertThereIsNoResultOfSearch();
     }
 
     // Проверка наличия искомого слова во всех результатах поиска
     @Test
     public void testMatchResults() {
-        MainPageObject.waitForElementAndClick(
-                By.xpath("//*[contains(@text, 'Search Wikipedia')]"),
-                "Не найдена строка поиска",
-                5);
-        String searchWord = "Java";
-        MainPageObject.waitForElementAndSendKeys(
-                By.xpath("//*[contains(@text, 'Search…')]"),
-                searchWord,
-                "Ошибка ввода текста в строку поиска",
-                5);
+        String search_word = "Java";
+
+        SearchPageObject.initSearchInput();
+        SearchPageObject.typeSearchLine(search_word);
         List listElements = MainPageObject.waitForListElements(
-                By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_title']"));
-        for (Object element : listElements) {
-            WebElement webElement = (WebElement) element;
-            String title = webElement.getText();
-            assertTrue(
-                    "Заголовок результата: \"" + title + "\" не содержит искомого слова: \"" + searchWord + "\"",
-                    title.contains(searchWord)
-            );
-        }
+                By.xpath(SearchPageObject.SEARCH_RESULTS_TITLES));
+        MainPageObject.assertCompareTextElementsInList(listElements, search_word);
     }
 
     // Проверка количества результатов по запросу с 1 результатом
     @Test
     public void testAmountOfNotEmptySearch() {
-        SearhPageObject SearhPageObject = new SearhPageObject(driver);
         String search_word = "Linkin Park diskography";
 
-        SearhPageObject.initSearchInput();
-        SearhPageObject.typeSearchLine(search_word);
-        int amount_of_search_results = SearhPageObject.getAmountOfFoundArticles();
+        SearchPageObject.initSearchInput();
+        SearchPageObject.typeSearchLine(search_word);
+        int amount_of_search_results = SearchPageObject.getAmountOfFoundArticles();
         assertTrue(
-                "Найдено меньше результатов поиска чем ожидалось",
-                amount_of_search_results > 0);
+                "Количество результатов: " + amount_of_search_results + " не соответствует ожидаемому: 1",
+                amount_of_search_results == 1);
     }
 
     // Проверка отсутствия результатов по запросу
     @Test
     public void testAmountOfEmptySearch() {
-        SearhPageObject SearhPageObject = new SearhPageObject(driver);
         String search_word = "qazwsxedc";
 
-        SearhPageObject.initSearchInput();
-        SearhPageObject.typeSearchLine(search_word);
-        SearhPageObject.waitForEmptyResultsLabel();
-        SearhPageObject.assertThereIsNoResultOfSearch();
+        SearchPageObject.initSearchInput();
+        SearchPageObject.typeSearchLine(search_word);
+        SearchPageObject.waitForEmptyResultsLabel();
+        SearchPageObject.assertThereIsNoResultOfSearch();
     }
 }

@@ -6,7 +6,9 @@ import org.openqa.selenium.By;
 public class NavigationUI extends MainPageObject {
 
     private static final String
-        MY_LISTS_LINK = "//android.widget.FrameLayout[@content-desc='My lists']";
+
+            // ----------------------------- Локаторы элементов связанных с навигацией --------------------------------
+            MY_LISTS_LINK = "//android.widget.FrameLayout[@content-desc='My lists']";
 
     public NavigationUI(AppiumDriver driver) {
         super(driver);

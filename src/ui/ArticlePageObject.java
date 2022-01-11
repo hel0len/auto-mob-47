@@ -4,22 +4,26 @@ import io.appium.java_client.AppiumDriver;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
-public class ArticlePageObject extends MainPageObject{
+public class ArticlePageObject extends MainPageObject {
 
-    private static final String
-        TITLE = "//*[@resource-id='org.wikipedia:id/view_page_title_text']",
-        LINK_IN_FOOTER = "//*[@text='View page in browser']",
-        OPTIONS_BUTTON = "//android.widget.ImageView[@content-desc='More options']",
-        OPTION_ADD_TO_READING_LIST = "//*[@text='Add to reading list']",
-        GOT_IT_IN_OVERLAY = "//*[contains(@text, 'GOT IT')]",
-        LIST_NAME_INPUT = "//*[@resource-id='org.wikipedia:id/text_input']",
-        CREATE_LIST_OK_BUTTON = "//*[@text='OK']",
-        CLOSE_ARTICLE_BUTTON = "//android.widget.ImageButton[@content-desc='Navigate up']";
+    public static final String
+
+            // ---------------------------- Локаторы элементов на детальных экранах статей ----------------------------
+            TITLE = "//*[@resource-id='org.wikipedia:id/view_page_title_text']",
+            LINK_IN_FOOTER = "//*[@text='View page in browser']",
+            OPTIONS_BUTTON = "//android.widget.ImageView[@content-desc='More options']",
+            OPTION_ADD_TO_READING_LIST = "//*[@text='Add to reading list']",
+            GOT_IT_IN_OVERLAY = "//*[contains(@text, 'GOT IT')]",
+            LIST_NAME_INPUT = "//*[@resource-id='org.wikipedia:id/text_input']",
+            CREATE_LIST_OK_BUTTON = "//*[@text='OK']",
+            CLOSE_ARTICLE_BUTTON = "//android.widget.ImageButton[@content-desc='Navigate up']",
+            LIST_NAME_IN_OVERLAY_TPL = "//*[@resource-id='org.wikipedia:id/item_title'][@text='{SUBSTRING}']";
 
     public ArticlePageObject(AppiumDriver driver) {
 
         super(driver);
     }
+
     // Проверка отображения на экране заголовка статьи
     public WebElement waitForTitleElement() {
         return this.waitForElementPresent(
@@ -43,8 +47,7 @@ public class ArticlePageObject extends MainPageObject{
     }
 
     // Добавление статьи в новый пользовательский список статей
-    public void addArticleToMyList(String folderName) {
-
+    public void addArticleToNewMyList(String folderName) {
         this.waitForElementAndClick(
                 By.xpath(OPTIONS_BUTTON),
                 "Не найдена кнопка 'More options'",
@@ -70,7 +73,22 @@ public class ArticlePageObject extends MainPageObject{
                 By.xpath(CREATE_LIST_OK_BUTTON),
                 "Не удалось нажатие кнопки 'OK' в окне создания списка",
                 5);
+    }
 
+    // Добавление статьи в существующий пользовательский список статей
+    public void addArticleToOldMyList(String folderName) {
+        this.waitForElementAndClick(
+                By.xpath(OPTIONS_BUTTON),
+                "Не найдена кнопка 'More options'",
+                5);
+        this.waitForElementAndClick(
+                By.xpath(OPTION_ADD_TO_READING_LIST),
+                "Не найдена кнопка 'Add to reading list' в выпадающем списке",
+                10);
+        this.waitForElementAndClick(
+                By.xpath(getLocator(LIST_NAME_IN_OVERLAY_TPL, folderName)),
+                "Не найдена список с названием: " + folderName + " в модалке",
+                5);
     }
 
     // Закрытие статьи

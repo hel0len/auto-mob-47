@@ -6,21 +6,14 @@ import org.openqa.selenium.By;
 public class MyListsPageObject extends MainPageObject {
 
     public static final String
+
+            // ----------------------- Локаторы элементов на экране пользовательских списков --------------------------
             FOLDER_BY_NAME_TPL = "//*[@resource-id='org.wikipedia:id/item_title'][@text='{SUBSTRING}']",
             ARTICLE_BY_TITLE_TPL = "//*[@text='{SUBSTRING}']";
 
     public MyListsPageObject(AppiumDriver driver) {
         super(driver);
     }
-
-    /* TEMPLATE METHODS */
-
-    // Добавление подстроки в локатор
-    private static String getLocator(String locator, String substring) {
-        return locator.replace("{SUBSTRING}", substring);
-    }
-
-    /* TEMPLATE METHODS */
 
     // Клик на список по переданному имени
     public void openFolderByName(String folder_name) {
@@ -51,6 +44,14 @@ public class MyListsPageObject extends MainPageObject {
         this.waitForElementNotPresent(
                 By.xpath(getLocator(ARTICLE_BY_TITLE_TPL, article_title)),
                 "Cтатья: " + article_title + " отображается в списке",
+                10);
+    }
+
+    // Открытие статьи в списке по переданному имени
+    public void openArticleInListByTitle(String article_title) {
+        this.waitForElementAndClick(
+                By.xpath(getLocator(ARTICLE_BY_TITLE_TPL, article_title)),
+                "Cтатья: " + article_title + " не найдена в списке",
                 10);
     }
 }
