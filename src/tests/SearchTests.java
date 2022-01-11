@@ -48,31 +48,38 @@ public class SearchTests extends CoreTestCase {
     // Проверка текста плейсхолдера в строке поиска
     @Test
     public void testComparePlaceholderSearchText() {
-        SearhPageObject SearhPageObject = new SearhPageObject(driver);
-
-        String placeholder = SearhPageObject.getSearchLinePlaceholder();
-        assertEquals(
-                "Текст плейсхолдера в строке поиска не соответствует ожидаемому",
+        MainPageObject.assertElementHasText(
+                By.xpath("//*[@resource-id='org.wikipedia:id/search_container']//*[@class='android.widget.TextView']"),
                 "Search Wikipedia",
-                placeholder);
+                "Текст плейсхолдера в строке поиска не соответствует ожидаемому");
     }
 
-    // Проверка отсутствия в поисковой выдаче результатов после отмены поиска
+    // Проверка наличия в поисковой выдаче результатов после отмены поиска
     @Test
     public void testCancelSearchWithResults() {
-        SearhPageObject SearhPageObject = new SearhPageObject(driver);
-
-        SearhPageObject.initSearchInput();
-        SearhPageObject.typeSearchLine("Test");
-        int oldAmountElements = SearhPageObject.getAmountOfFoundArticles();
+        MainPageObject.waitForElementAndClick(
+                By.xpath("//*[contains(@text, 'Search Wikipedia')]"),
+                "Не найдена строка поиска",
+                5);
+        MainPageObject.waitForElementAndSendKeys(
+                By.xpath("//*[contains(@text, 'Search…')]"),
+                "Test",
+                "Ошибка ввода текста в строку поиска",
+                5);
+        List oldListElements = MainPageObject.waitForListElements(
+                By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_container']"));
         assertTrue(
                 "В поисковой выдаче отсутствуют результаты",
-                oldAmountElements != 0);
-        SearhPageObject.clickCancelSearch();
-
+                oldListElements.size() != 0);
+        MainPageObject.waitForElementAndClick(
+                By.xpath("//android.widget.ImageView[@content-desc=\"Clear query\"]"),
+                "Не найден крестик в строке поиска",
+                5);
         List newListElements = MainPageObject.waitForListElements(
                 By.xpath("//*[@resource-id='org.wikipedia:id/page_list_item_container']"));
-        SearhPageObject.assertThereIsNoResultOfSearch();
+        assertTrue(
+                "В поисковой выдаче присутствуют результаты",
+                newListElements.size() == 0);
     }
 
     // Проверка наличия искомого слова во всех результатах поиска
