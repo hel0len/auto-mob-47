@@ -21,11 +21,17 @@ public class MainPageObject {
     }
 
     /*---------------------------------------------- TEMPLATE METHODS ---------------------------------------------- */
-    // Добавление подстроки в локатор
-    public static String getLocator(String locator, String substring) {
+    // Добавление одной подстроки в локатор
+    public static String getLocatorWithOneSubstring(String locator, String substring) {
         return locator.replace("{SUBSTRING}", substring);
     }
+
+    //Добавление двух подстрок в локатор
+    public static String getLocatorWithTwoSubstring(String locator, String substring_1, String substring_2) {
+        return locator.replace("{SUBSTRING_1}", substring_1).replace("{SUBSTRING_2}", substring_2);
+    }
     /*---------------------------------------------- TEMPLATE METHODS ---------------------------------------------- */
+
 
     // Ожидание присутствия элемента на странице с явным указанием таймаута
     public WebElement waitForElementPresent(By by, String error_message, long timeoutInSessions) {

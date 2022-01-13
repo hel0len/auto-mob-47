@@ -18,7 +18,7 @@ public class MyListsPageObject extends MainPageObject {
     // Клик на список по переданному имени
     public void openFolderByName(String folder_name) {
         this.waitForElementAndClick(
-                By.xpath(getLocator(FOLDER_BY_NAME_TPL, folder_name)),
+                By.xpath(getLocatorWithOneSubstring(FOLDER_BY_NAME_TPL, folder_name)),
                 "Не найден список с названием" + folder_name,
                 5);
     }
@@ -26,7 +26,7 @@ public class MyListsPageObject extends MainPageObject {
     // Проверка отсутствия статьи в списке по переданному имени
     public void waitForArticleAppearByTitle(String article_title) {
         this.waitForElementNotPresent(
-                By.xpath(getLocator(ARTICLE_BY_TITLE_TPL, article_title)),
+                By.xpath(getLocatorWithOneSubstring(ARTICLE_BY_TITLE_TPL, article_title)),
                 "Cтатья: " + article_title + " не отображается в списке",
                 10);
     }
@@ -35,14 +35,14 @@ public class MyListsPageObject extends MainPageObject {
     public void swipeArticleToDelete(String article_title) {
         this.waitForArticleAppearByTitle(article_title);
         this.swipeElementToLeft(
-                By.xpath(getLocator(ARTICLE_BY_TITLE_TPL, article_title)),
+                By.xpath(getLocatorWithOneSubstring(ARTICLE_BY_TITLE_TPL, article_title)),
                 "Не удалось удаление статьи " + article_title + " из списка с помощью свайпа влево");
     }
 
     // Проверка отсутствия статьи в списке по переданному имени
     public void waitForArticleToDisappearByTitle(String article_title) {
         this.waitForElementNotPresent(
-                By.xpath(getLocator(ARTICLE_BY_TITLE_TPL, article_title)),
+                By.xpath(getLocatorWithOneSubstring(ARTICLE_BY_TITLE_TPL, article_title)),
                 "Cтатья: " + article_title + " отображается в списке",
                 10);
     }
@@ -50,7 +50,7 @@ public class MyListsPageObject extends MainPageObject {
     // Открытие статьи в списке по переданному имени
     public void openArticleInListByTitle(String article_title) {
         this.waitForElementAndClick(
-                By.xpath(getLocator(ARTICLE_BY_TITLE_TPL, article_title)),
+                By.xpath(getLocatorWithOneSubstring(ARTICLE_BY_TITLE_TPL, article_title)),
                 "Cтатья: " + article_title + " не найдена в списке",
                 10);
     }

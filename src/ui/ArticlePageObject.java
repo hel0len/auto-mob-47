@@ -86,7 +86,7 @@ public class ArticlePageObject extends MainPageObject {
                 "Не найдена кнопка 'Add to reading list' в выпадающем списке",
                 10);
         this.waitForElementAndClick(
-                By.xpath(getLocator(LIST_NAME_IN_OVERLAY_TPL, folderName)),
+                By.xpath(getLocatorWithOneSubstring(LIST_NAME_IN_OVERLAY_TPL, folderName)),
                 "Не найдена список с названием: " + folderName + " в модалке",
                 5);
     }

@@ -19,6 +19,10 @@ public class SearchPageObject extends MainPageObject {
             SEARCH_LINE_PLACEHOLDER = "//*[@resource-id='org.wikipedia:id/search_container']" +
                     "//*[@class='android.widget.TextView']",
             SEARCH_RESULTS_TITLES = "//*[@resource-id='org.wikipedia:id/page_list_item_title']",
+            SEARCH_RESULT_BY_TITLE_AND_DESCRIPTION_TPL ="//android.widget.TextView" +
+                    "[@resource-id='org.wikipedia:id/page_list_item_title'][contains(@text, '{SUBSTRING_1}')]" +
+                    "/following-sibling::android.widget.TextView" +
+                    "[@resource-id='org.wikipedia:id/page_list_item_description'][@text='{SUBSTRING_2}']",
 
             // -------------------------------- Статичные значения текстовых элементов --------------------------------
             TEXT_PLACEHOLDER = "Search Wikipedia";
@@ -50,7 +54,7 @@ public class SearchPageObject extends MainPageObject {
 
     // Проверка отображения в поисоковой выдаче результата с переданным текстом
     public void waitForSearchResult(String substring) {
-        String result_locator = getLocator(SEARCH_RESULT_BY_SUBSTRING_TPL, substring);
+        String result_locator = getLocatorWithOneSubstring(SEARCH_RESULT_BY_SUBSTRING_TPL, substring);
         this.waitForElementPresent(
                 By.xpath(result_locator),
                 "В поисковой выдаче не отображен результат с подстрокой: " + substring,
@@ -59,7 +63,7 @@ public class SearchPageObject extends MainPageObject {
 
     // Клик по результату с переданной подстрокой в поисковой выдаче
     public void clickByArticleWithSubstring(String substring) {
-        String result_locator = getLocator(SEARCH_RESULT_BY_SUBSTRING_TPL, substring);
+        String result_locator = getLocatorWithOneSubstring(SEARCH_RESULT_BY_SUBSTRING_TPL, substring);
         this.waitForElementAndClick(
                 By.xpath(result_locator),
                 "Не удалось кликнуть по результату в поисковой выдаче с подстрокой: " + substring,
@@ -122,4 +126,15 @@ public class SearchPageObject extends MainPageObject {
                 "Текст плейсхолдера в строке поиска не соответствует ожидаемому");
     }
 
+    // Проверка отображения в поисоковой выдаче результата с переданным заголовком и описанием
+    public void waitForElementByTitleAndDescription(String title, String description) {
+        this.waitForElementPresent(
+                By.xpath(MainPageObject.getLocatorWithTwoSubstring(
+                        SEARCH_RESULT_BY_TITLE_AND_DESCRIPTION_TPL,
+                        title,
+                        description)),
+                "В поисковой выдаче не найден результат по заголовку: " + title +
+                        " и описанию: " + description,
+                5);
+    }
 }

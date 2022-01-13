@@ -96,4 +96,19 @@ public class SearchTests extends CoreTestCase {
         SearchPageObject.waitForEmptyResultsLabel();
         SearchPageObject.assertThereIsNoResultOfSearch();
     }
+
+    // Проверка наличия искомого слова в 3 результатах поиска c локатором, зависящим от двух подстрок
+    @Test
+    public void testMatchResultsWithCompositeLocator() {
+        String search_word = "Alexander";
+        String description_1 = "Male given name",
+               description_2 = "King of Macedon",
+               description_3 = "First Secretary of the Treasury and Founding Father of the United States (1757-1804)";
+
+        SearchPageObject.initSearchInput();
+        SearchPageObject.typeSearchLine(search_word);
+        SearchPageObject.waitForElementByTitleAndDescription(search_word, description_1);
+        SearchPageObject.waitForElementByTitleAndDescription(search_word, description_2);
+        SearchPageObject.waitForElementByTitleAndDescription(search_word, description_3);
+    }
 }
